@@ -6,6 +6,9 @@ buildscript{
         mavenLocal()
         mavenCentral()
     }
+    dependencies {
+        classpath 'org.ajoberstar:gradle-jacoco:0.1.0'
+    }
 }
 
 group 'gocardless'
@@ -32,5 +35,5 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
 // https://mvnrepository.com/artifact/org.jsoup/jsoup
     compile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
-
+    compile group: 'com.google.guava', name: 'guava', version: '18.0'
 }
