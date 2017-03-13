@@ -36,4 +36,5 @@ dependencies {
 // https://mvnrepository.com/artifact/org.jsoup/jsoup
     compile group: 'org.jsoup', name: 'jsoup', version: '1.10.2'
     compile group: 'com.google.guava', name: 'guava', version: '18.0'
+    compile 'com.github.crawler-commons:crawler-commons:0.7'
 }

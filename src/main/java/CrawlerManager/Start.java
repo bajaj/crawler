@@ -21,11 +21,11 @@ public class Start {
         Queue<URL> pageRequestQueue = new ArrayDeque<>();
         pageRequestQueue.add(seedUrl);
         urlInProcessingQueue.add(seedUrl.toString());
+        UrlCrawlRule urlCrawlRule = new UrlCrawlRule(seedUrl.toString());
 
         Set<String> allProcessedUrl = new HashSet<>();
 
         List<Page> result = new ArrayList<>();
-
 
 
         while(!pageRequestQueue.isEmpty()){
@@ -44,6 +44,7 @@ public class Start {
                     .filter(x->!allProcessedUrl.contains(x.toString()))
                     .filter(x->!urlInProcessingQueue.contains(x.toString()))
                     .filter(x->x.toString().indexOf(seedUrl.toString())==0)
+                    .filter(x->urlCrawlRule.isAllowed(x.toString()))
                     .collect(Collectors.toSet());
 
             pageRequestQueue.addAll(nextUrlsToProcess);
@@ -55,5 +56,7 @@ public class Start {
         System.out.println("done all");
 
     }
+
+
 
 }
