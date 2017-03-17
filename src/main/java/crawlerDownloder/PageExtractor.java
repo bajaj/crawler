@@ -50,7 +50,7 @@ public class PageExtractor {
             } catch (MalformedURLException e) {
                 return null;
             }
-        }).filter(x -> x != null)
+        }).filter(x -> null != x)
         .collect(Collectors.toSet());
     }
 }

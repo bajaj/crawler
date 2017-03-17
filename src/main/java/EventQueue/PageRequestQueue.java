@@ -1,51 +1,42 @@
 package EventQueue;
 
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
-import crawlerDownloder.PageExtractor;
-
 import java.net.URL;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Created by bajaj on 12/03/17.
  */
 public class PageRequestQueue {
 
-    private static Integer MIN_THREAD = 1;
-    private static Integer MAX_THREAD = 1;
-    private static Long KEEP_ALIVE_TIME = 0L;
+    private Set<String> urlInProcessingQueue;
+    private Queue<URL> pageRequestQueue;
 
-    private EventBus eventBus;
-
-    private PageExtractor pageExtractor;
-
-    public PageRequestQueue(PageExtractor pageExtractor){
-        this.pageExtractor = pageExtractor;
+    public PageRequestQueue(){
+        urlInProcessingQueue = new HashSet<>();
+        pageRequestQueue = new ArrayDeque<>();
     }
 
-    public void publish(URL url){
-        if(eventBus == null)
-            initiateEventBus();
-        eventBus.post(url);
+    public boolean isEmpty(){
+        return pageRequestQueue.isEmpty();
     }
 
-    private void initiateEventBus(){
-        synchronized (this) {
-            if(eventBus == null) {
-                ThreadPoolExecutor executor = new ThreadPoolExecutor(MIN_THREAD, MAX_THREAD,
-                        KEEP_ALIVE_TIME, TimeUnit.MILLISECONDS,
-                        new LinkedBlockingQueue<>());
-                eventBus = new AsyncEventBus(executor);
-                eventBus.register(pageExtractor);
-            }
-        }
+    public URL remove(){
+        URL url = pageRequestQueue.remove();
+        urlInProcessingQueue.remove(url.toString());
+        return url;
     }
 
+    public boolean addAll(Collection<URL> urlList){
+        urlList.forEach(url -> urlInProcessingQueue.add(url.toString()));
+        return pageRequestQueue.addAll(urlList);
+    }
 
+    public boolean add(URL url){
+        return addAll(Collections.singletonList(url));
+    }
 
-
-
+    public Predicate<URL> isAlreadyInQueue(){
+        return url -> !urlInProcessingQueue.contains(url.toString());
+    }
 }
