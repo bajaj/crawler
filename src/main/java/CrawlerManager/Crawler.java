@@ -17,40 +17,36 @@ public class Crawler {
     private URL seedUrl ;
     private PageRequestQueue pageRequestQueue;
     private UrlCrawlRule urlCrawlRule;
-    private Set<String> allProcessedUrl;
-    private List<Page> result;
+    private Set<URL> allProcessedUrl;
     Predicate<URL> urlPredicate;
 
     public Crawler(URL url) throws MalformedURLException {
-        this.seedUrl = url;
-        this.pageRequestQueue = new PageRequestQueue();
-        this.pageRequestQueue.add(seedUrl);
-        this.urlCrawlRule = new UrlCrawlRule(this.seedUrl.toString());
+        seedUrl = url;
 
-        this.allProcessedUrl = new HashSet<>();
-        this.result = new ArrayList<>();
+        pageRequestQueue = new PageRequestQueue();
+        pageRequestQueue.add(seedUrl);
+        pageRequestQueue.addAll(SiteMapProcessor.getSiteMapUrls(seedUrl));
+
+        urlCrawlRule = new UrlCrawlRule(seedUrl.toString());
+
+        allProcessedUrl = new HashSet<>();
         setUrlPredicate();
     }
 
-    private void setUrlPredicate() {
-        List<Predicate<URL>> urlFilters = new ArrayList<>();
-        urlFilters.add(alreadyProccesedUrl());
-        urlFilters.add(pageRequestQueue.isAlreadyInQueue());
-        urlFilters.add(sameDomainUrl());
-        urlFilters.add(robotFileExclusion());
-        this.urlPredicate = urlFilters.stream().reduce(Predicate::and).orElse(x->true);
-    }
+    public List<Page> startCrawling(long maxSecondsToCrawl){
+        List<Page> pageList = new ArrayList<>();
 
-    public void startCrawling(){
+        long startedTimeMillis = System.currentTimeMillis();
+
         while(!pageRequestQueue.isEmpty()){
             URL urlToBeProcessed = pageRequestQueue.remove();
-            allProcessedUrl.add(urlToBeProcessed.toString());
-
+            allProcessedUrl.add(urlToBeProcessed);
+9
             Optional<Page> processedPage = PageExtractor.execute(urlToBeProcessed);
             if(!processedPage.isPresent())
                 continue;
 
-            result.add(processedPage.get());
+            pageList.add(processedPage.get());
 
             Set<URL> nextUrlsToProcess = processedPage.get().getChildren()
                     .stream()
@@ -58,18 +54,43 @@ public class Crawler {
                     .collect(Collectors.toSet());
             pageRequestQueue.addAll(nextUrlsToProcess);
 
-            System.out.println("done");
+            if(((System.currentTimeMillis() - startedTimeMillis)/1000l) > maxSecondsToCrawl) {
+                System.out.println("Done crawling for the mentioned time");
+                break;
+            }
         }
+
+        return pageList;
     }
 
-    private Predicate<URL> alreadyProccesedUrl(){
-        return url-> !allProcessedUrl.contains(url.toString());
+    private void setUrlPredicate() {
+        List<Predicate<URL>> urlFilters = new ArrayList<>();
+        urlFilters.add(alreadyProcessedUrl());
+        urlFilters.add(sameDomainUrl());
+        urlFilters.add(robotFileExclusion());
+        this.urlPredicate = urlFilters.stream().reduce(Predicate::and).orElse(x->true);
     }
 
+    /**
+     * Predicate for not crawling already crawled url
+     * @return
+     */
+    private Predicate<URL> alreadyProcessedUrl(){
+        return url-> !allProcessedUrl.contains(url);
+    }
+
+    /**
+     * Predicate for crawling only seed domain url
+     * @return
+     */
     private Predicate<URL> sameDomainUrl(){
-        return url -> url.toString().indexOf(seedUrl.toString())==0;
+        return url -> url.getHost().equals(seedUrl.getHost());
     }
 
+    /**
+     * Not crawling url which are excluded by robot.txt file
+     * @return
+     */
     private Predicate<URL> robotFileExclusion(){
         return url -> urlCrawlRule.isAllowed(url.toString());
     }

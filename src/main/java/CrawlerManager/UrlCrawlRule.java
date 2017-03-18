@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
+ * Represents rules for crawling a url
  * Created by bajaj on 13/03/17.
  */
 public class UrlCrawlRule {
@@ -33,6 +34,11 @@ public class UrlCrawlRule {
         }
     }
 
+    /**
+     * Check whether the url is allowed and the path is not mentioned in the robots.txt
+     * @param url
+     * @return
+     */
     public boolean isAllowed(String url){
         return rules.isAllowed(url);
     }

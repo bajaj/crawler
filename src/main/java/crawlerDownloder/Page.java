@@ -1,5 +1,7 @@
 package crawlerDownloder;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.net.URL;
 import java.util.List;
 import java.util.Set;
@@ -10,6 +12,8 @@ import java.util.Set;
 public class Page {
     private URL url;
     private List<String> assets;
+
+    @JsonIgnore
     private Set<URL> children;
 
     public Page(URL url, List<String> assets, Set<URL> children) {

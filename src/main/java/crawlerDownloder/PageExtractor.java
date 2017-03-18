@@ -21,10 +21,15 @@ public class PageExtractor {
 
     private static final int pageTimeOut = 10000;
 
+    /**
+     * Gets the html from url and then returns the page object
+     * @param url
+     * @return
+     */
     public static Optional<Page> execute(URL url) {
         try {
             Document document = Jsoup.connect(url.toString()).timeout(pageTimeOut).get();
-            List<String> assests = getAssests(document);
+            List<String> assests = getAssets(document);
             Set<URL> links = getLinks(document);
             return Optional.of(new Page(url, assests, links));
         } catch (IOException e) {
@@ -33,7 +38,7 @@ public class PageExtractor {
         }
     }
 
-    private static List<String> getAssests(Document document){
+    private static List<String> getAssets(Document document){
         List<String> result = new ArrayList<>();
         Elements media = document.select("[src]");
         Elements imports = document.select("link[href]");
