@@ -17,10 +17,12 @@ version '1.0-SNAPSHOT'
 
 
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'maven'
 apply plugin: 'idea'
 
 sourceCompatibility = 1.8
+mainClassName = "CrawlerManager/Start"
 
 repositories {
     maven {
@@ -42,5 +44,16 @@ dependencies {
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version:'2.5.4'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version:'2.5.4'
     testCompile "com.github.tomakehurst:wiremock:2.5.1"
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
 
+}
+
+run{
+    standardInput = System.in
+}
+
+test {
+    testLogging {
+        events "passed", "skipped", "failed", "standardOut", "standardError"
+    }
 }
