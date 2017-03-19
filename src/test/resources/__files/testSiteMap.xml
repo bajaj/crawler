@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"
+        xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+    <url>
+        <loc>http://localhost:18089/en-ie/</loc>
+        <content:hash>0c58ef15650cad16e3c5dd75ce9f8abb</content:hash>
+        <lastmod>2017-02-13</lastmod>
+    </url>
+    <url>
+        <loc>http://localhost:18089/stories/</loc>
+        <content:hash>01b638d030139cfe7495f77b2ded99e3</content:hash>
+        <lastmod>2017-01-26</lastmod>
+    </url>
+</urlset>

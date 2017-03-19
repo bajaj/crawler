@@ -1,6 +1,5 @@
 package CrawlerManager;
 
-import com.google.common.annotations.VisibleForTesting;
 import crawlercommons.sitemaps.SiteMap;
 import crawlercommons.sitemaps.SiteMapParser;
 import crawlercommons.sitemaps.SiteMapURL;
@@ -40,9 +39,8 @@ public class SiteMapProcessor {
         else
             return Collections.emptyList();
     }
-
-     @VisibleForTesting
-     public URL getSiteMapXmlUrl(URL url) throws MalformedURLException {
+    
+     private URL getSiteMapXmlUrl(URL url) throws MalformedURLException {
         if(url.toString().endsWith("/"))
             return new URL(url.toString() + "sitemap.xml");
         else
