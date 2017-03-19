@@ -99,9 +99,9 @@ effictiveness of the crawler.
 }
 ```
 
-- PageRequestQueue - a simple queue containing un-parsed url. It is backed by hashSet to contain unique url only.
+- PageRequestQueue - a simple queue containing un-parsed urls. It is backed by hashSet to contain unique urls only.
 ```
-[url]
+[url1, url2]
 ```
 
 
