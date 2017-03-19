@@ -18,31 +18,31 @@ public class Crawler {
     private PageRequestQueue pageRequestQueue;
     private UrlCrawlRule urlCrawlRule;
     private Set<URL> allProcessedUrl;
-    Predicate<URL> urlPredicate;
+    private PageExtractor pageExtractor;
 
-    public Crawler(URL url) throws MalformedURLException {
+    public Crawler(URL url, SiteMapProcessor siteMapProcessor,  UrlCrawlRule  urlCrawlRule, PageExtractor pageExtractor) throws MalformedURLException {
         seedUrl = url;
 
         pageRequestQueue = new PageRequestQueue();
         pageRequestQueue.add(seedUrl);
-        pageRequestQueue.addAll(SiteMapProcessor.getSiteMapUrls(seedUrl));
+        pageRequestQueue.addAll(siteMapProcessor.getSiteMapUrls(seedUrl));
 
-        urlCrawlRule = new UrlCrawlRule(seedUrl.toString());
-
-        allProcessedUrl = new HashSet<>();
-        setUrlPredicate();
+        this.urlCrawlRule = urlCrawlRule;
+        this.pageExtractor = pageExtractor;
     }
 
     public List<Page> startCrawling(long maxSecondsToCrawl){
         List<Page> pageList = new ArrayList<>();
+        allProcessedUrl = new HashSet<>();
+        Predicate<URL> urlPredicate = getUrlPredicate();
 
         long startedTimeMillis = System.currentTimeMillis();
 
         while(!pageRequestQueue.isEmpty()){
             URL urlToBeProcessed = pageRequestQueue.remove();
             allProcessedUrl.add(urlToBeProcessed);
-9
-            Optional<Page> processedPage = PageExtractor.execute(urlToBeProcessed);
+
+            Optional<Page> processedPage = pageExtractor.execute(urlToBeProcessed);
             if(!processedPage.isPresent())
                 continue;
 
@@ -63,12 +63,15 @@ public class Crawler {
         return pageList;
     }
 
-    private void setUrlPredicate() {
+    /**
+     * calculate the final predicate to be applied using all the available predicates
+     */
+    private Predicate<URL> getUrlPredicate() {
         List<Predicate<URL>> urlFilters = new ArrayList<>();
         urlFilters.add(alreadyProcessedUrl());
         urlFilters.add(sameDomainUrl());
         urlFilters.add(robotFileExclusion());
-        this.urlPredicate = urlFilters.stream().reduce(Predicate::and).orElse(x->true);
+        return urlFilters.stream().reduce(Predicate::and).orElse(x->true);
     }
 
     /**

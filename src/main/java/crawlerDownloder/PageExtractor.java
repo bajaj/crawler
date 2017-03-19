@@ -26,7 +26,7 @@ public class PageExtractor {
      * @param url
      * @return
      */
-    public static Optional<Page> execute(URL url) {
+    public Optional<Page> execute(URL url) {
         try {
             Document document = Jsoup.connect(url.toString()).timeout(pageTimeOut).get();
             List<String> assests = getAssets(document);
@@ -38,6 +38,11 @@ public class PageExtractor {
         }
     }
 
+    /**
+     * Returns all the assets links as string present in the document
+     * @param document
+     * @return
+     */
     private static List<String> getAssets(Document document){
         List<String> result = new ArrayList<>();
         Elements media = document.select("[src]");
@@ -47,6 +52,11 @@ public class PageExtractor {
         return result;
     }
 
+    /**
+     * Returns all the link present in the document
+     * @param document
+     * @return
+     */
     private static Set<URL> getLinks(Document document){
         Elements links = document.select("a[href]");
         return links.stream().map(x -> {

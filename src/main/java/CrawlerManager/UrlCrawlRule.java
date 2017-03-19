@@ -8,7 +8,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -23,11 +22,13 @@ import java.net.URL;
 public class UrlCrawlRule {
     private String url;
     private BaseRobotRules rules;
+    private HttpClient httpClient;
 
-    public UrlCrawlRule(String url){
+    public UrlCrawlRule(String url, HttpClient httpClient){
         this.url = url;
+        this.httpClient = httpClient;
         try {
-            this.rules = getRobotRuleForUrl(url);
+            rules = getRobotRuleForUrl(url);
         } catch (IOException e) {
             e.printStackTrace();
             rules = new SimpleRobotRules(SimpleRobotRules.RobotRulesMode.ALLOW_ALL);
@@ -51,7 +52,6 @@ public class UrlCrawlRule {
 
         HttpGet httpget = new HttpGet(hostId + "/robots.txt");
         HttpContext context = new BasicHttpContext();
-        HttpClient httpClient = HttpClientBuilder.create().build();
         HttpResponse response = httpClient.execute(httpget, context);
         if (response.getStatusLine() != null && response.getStatusLine().getStatusCode() == 404) {
             // consume entity to deallocate connection
