@@ -2,6 +2,7 @@ package crawlerDownloder;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -43,12 +45,17 @@ public class PageExtractor {
      * @param document
      * @return
      */
-    private static List<String> getAssets(Document document){
+    private List<String> getAssets(Document document){
         List<String> result = new ArrayList<>();
         Elements media = document.select("[src]");
         Elements imports = document.select("link[href]");
         result.addAll(media.stream().map(x->x.attr("abs:src")).collect(Collectors.toList()));
-        result.addAll(imports.stream().filter(x->x.attr("rel").equals("stylesheet")).map(x->x.attr("abs:href")).collect(Collectors.toList()));
+        result.addAll(
+                imports.stream()
+                        .filter(importPredicate()).
+                map(x->x.attr("abs:href")).
+                collect(Collectors.toList())
+        );
         return result;
     }
 
@@ -57,7 +64,7 @@ public class PageExtractor {
      * @param document
      * @return
      */
-    private static Set<URL> getLinks(Document document){
+    private Set<URL> getLinks(Document document){
         Elements links = document.select("a[href]");
         return links.stream().map(x -> {
             try {
@@ -68,6 +75,11 @@ public class PageExtractor {
         }).filter(x -> null != x)
         .collect(Collectors.toSet());
     }
+
+    private Predicate<Element> importPredicate(){
+        return ele-> !ele.attr("rel").equals("alternate") && !ele.attr("rel").equals("canonical");
+    }
+
 }
 
 

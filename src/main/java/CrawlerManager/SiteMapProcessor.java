@@ -39,7 +39,7 @@ public class SiteMapProcessor {
         else
             return Collections.emptyList();
     }
-    
+
      private URL getSiteMapXmlUrl(URL url) throws MalformedURLException {
         if(url.toString().endsWith("/"))
             return new URL(url.toString() + "sitemap.xml");

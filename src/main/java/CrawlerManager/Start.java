@@ -7,6 +7,8 @@ import crawlerDownloder.Page;
 import crawlerDownloder.PageExtractor;
 import org.apache.http.impl.client.HttpClientBuilder;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
@@ -27,13 +29,26 @@ public class Start {
 
         List<Page> pageList = crawler.startCrawling(Long.valueOf(args[1]));
 
-        final ObjectMapper mapper = new ObjectMapper();
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-
         System.out.println("No of pages scrolled " + pageList.size());
-        System.out.println(System.lineSeparator());
-        System.out.println(mapper.writeValueAsString(pageList));
+        writeToFile(pageList);
 
+    }
+
+    private static void writeToFile(List<Page> pageList){
+        PrintWriter writer = null;
+        try{
+            final ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            writer = new PrintWriter("result.txt", "UTF-8");
+            writer.println(mapper.writeValueAsString(pageList));
+        } catch (IOException e) {
+            System.out.println("Not able to write result to file");
+        }
+        finally {
+            if(null !=writer){
+                writer.close();
+            }
+        }
     }
 
 }
