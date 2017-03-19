@@ -9,7 +9,7 @@ Web cralwer for GoCardless
 ```bash
 $ ./gradlew build
 $ ./gradlew run -PappArgs="['https://gocardless.com/', 60]"
-(The first argument to run is the "domain name" and the second (here 60) is the "max time (in seconds) " the crawler should run. Since crawling takes lot of time we might want to run crawler only for some time)
+(The first argument to run is the "domain name-proper url" and the second (here 60) is the "max time (in seconds) " the crawler should run. Since crawling takes lot of time we might want to run crawler only for some time)
 $ ./gradlew test (to run test cases)
 ```
 
@@ -29,7 +29,7 @@ $ ./gradlew test (to run test cases)
 the most of the methods in the code base. Used `WireMock` for mocking external HTTP resources. `Mockito with Junit` for interface dependency. 
 `code coverage`: x% lines. For critical part of the code code coverage is > y% lines. 
 
-4. `State of the crawler` - Currently the state of crawler is in memory so if the crawler stops in between we loose the all work done by it. To implement this in production we should store the state in some persistence memory with replication.
+4. `State of the crawler` - Currently the state of crawler is in memory so if the crawler stops in between we loose the all work done by it. To implement this in production we should store the state in some persistence memory with replication. State includes pages crawled, urls to be crawled and any other data required to restart crawler.
 
 5. Errors produced by the parser are logged but muffled, ie. no bespoke action is taken.
 In production, error aggregation and monitoring are crucial for extending the
@@ -38,24 +38,25 @@ effictiveness of the crawler.
 ## Architecture
 
 ```
-           +--------+
-           | Domain |
-           +--------+
-             | | | |
-             v v v v
-           +---------+
-      +----| crawler |<---+
-      |    +---------+    |
-      v                   v
-  +------------+         +-----------+
-  | PageRequest|         |           | 
-  |   Queue    |<--------| SiteGraph |
-  +------------+         +-----------+
-                           ^
-                           |
-                       +------+
-                       | init |
-                       +------+
+               +--------+
+               | Start  |
+               +--------+
+                 ^ ^ | |
+   Pages crawled | | | | Domain & time to crawl
+                 | | v v
+               +---------+                 +---------------+
+          +----| crawler |<--------------->| PageExtractor |
+      push|    +---------+                 +---------------+
+      url |      ^
+          |      |fetch
+          |      |a url
+          |      |
+          v      |
+      +------------+         
+      | PageRequest|         
+      |   Queue    |
+      +------------+        
+                     
 ```
 
 ## Components
@@ -66,7 +67,7 @@ effictiveness of the crawler.
 - PageRequestQueue
     - It contains all the urls which are to processed by crawler.
     - No duplicate url is present in the queue.
-- PageFetcher
+- PageExtractor
     - Given a url it fetches the page by making http request.
     - Using Jsoup (DOM parser) it extracts all the assets and links from the page.
 - SiteMapXmpParser
