@@ -37,9 +37,9 @@ public class UrlCrawlRuleTest {
         String url = "http://localhost:18089/";
         UrlCrawlRule urlCrawlRule = new UrlCrawlRule(url, HttpClientBuilder.create().build());
 
-        assertEquals("Url path allowed", urlCrawlRule.isAllowed(url+"/stories"), true);
-        assertEquals("Url path allowed", urlCrawlRule.isAllowed(url+"/en-es"), true);
-        assertEquals("Url path allowed", urlCrawlRule.isAllowed(url+"/blogs"), true);
+        assertEquals("stories url path allowed", true, urlCrawlRule.isAllowed(url+"stories/"));
+        assertEquals("en-es url path allowed", true, urlCrawlRule.isAllowed(url+"en-es/"));
+        assertEquals("blogs url path allowed", true, urlCrawlRule.isAllowed(url+"blogs/"));
     }
 
     @Test
@@ -47,9 +47,9 @@ public class UrlCrawlRuleTest {
         String url = "http://localhost:18089/";
         UrlCrawlRule urlCrawlRule = new UrlCrawlRule(url, HttpClientBuilder.create().build());
 
-        assertEquals("Url path not allowed", urlCrawlRule.isAllowed(url+"/pay/"), false);
-        assertEquals("Url path not allowed", urlCrawlRule.isAllowed(url+"/merchants/"), false);
-        assertEquals("Url path not allowed", urlCrawlRule.isAllowed(url+"/users/"), false);
+        assertEquals("merchants url path not allowed", false, urlCrawlRule.isAllowed(url+"merchants/"));
+        assertEquals("pay url path not allowed", false, urlCrawlRule.isAllowed(url+"pay/"));
+        assertEquals("users url path not allowed", false, urlCrawlRule.isAllowed(url+"users/"));
     }
 
 }
