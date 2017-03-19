@@ -15,13 +15,13 @@ public class PageRequestQueueTest {
     @Test
     public void testIsEmpty() throws Exception {
         PageRequestQueue pageRequestQueue = new PageRequestQueue();
-        assertEquals("queue should be empty", true, pageRequestQueue.isEmpty());
+        assertEquals("queue should be empty initially", true, pageRequestQueue.isEmpty());
 
         pageRequestQueue.add(new URL("https://gocardless.com/"));
-        assertEquals("queue should not be empty", true, pageRequestQueue.isEmpty());
+        assertEquals("queue should not be empty after adding", false, pageRequestQueue.isEmpty());
 
         pageRequestQueue.remove();
-        assertEquals("queue should be empty", false, pageRequestQueue.isEmpty());
+        assertEquals("queue should be empty after remove", true, pageRequestQueue.isEmpty());
     }
 
     @Test
