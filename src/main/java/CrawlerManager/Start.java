@@ -41,6 +41,7 @@ public class Start {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             writer = new PrintWriter("result.txt", "UTF-8");
             writer.println(mapper.writeValueAsString(pageList));
+            System.out.println(mapper.writeValueAsString(pageList));
         } catch (IOException e) {
             System.out.println("Not able to write result to file");
         }
