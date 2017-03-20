@@ -32,7 +32,7 @@ public class Crawler {
     }
 
     public List<Page> startCrawling(long maxSecondsToCrawl){
-        System.out.println("Starting crawling");
+        System.out.println("====================== STARTING CRAWLING ===============================");
         List<Page> pageList = new ArrayList<>();
         allProcessedUrl = new HashSet<>();
         Predicate<URL> urlPredicate = getUrlPredicate();
@@ -56,7 +56,7 @@ public class Crawler {
             pageRequestQueue.addAll(nextUrlsToProcess);
 
             if(((System.currentTimeMillis() - startedTimeMillis)/1000l) > maxSecondsToCrawl) {
-                System.out.println("Done crawling for the mentioned time");
+                System.out.println("======= Done crawling for the mentioned time ========");
                 break;
             }
         }

@@ -29,9 +29,8 @@ public class Start {
 
         List<Page> pageList = crawler.startCrawling(Long.valueOf(args[1]));
 
-        System.out.println("No of pages scrolled " + pageList.size());
         writeToFile(pageList);
-
+        System.out.println("No of pages scrolled " + pageList.size());
     }
 
     private static void writeToFile(List<Page> pageList){
