@@ -32,6 +32,7 @@ public class Crawler {
     }
 
     public List<Page> startCrawling(long maxSecondsToCrawl){
+        System.out.println("Starting crawling");
         List<Page> pageList = new ArrayList<>();
         allProcessedUrl = new HashSet<>();
         Predicate<URL> urlPredicate = getUrlPredicate();

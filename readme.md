@@ -6,6 +6,7 @@ Web cralwer for GoCardless
 ## Usage
 - Language used for coding- Java 1.8
 - Build tool: Gradle
+- The output is printed to STDOUT and is also written to result.txt file.
 ```bash
 $ ./gradlew build
 $ ./gradlew run -PappArgs="['https://gocardless.com/', 60]"
@@ -16,7 +17,7 @@ $ ./gradlew test (to run test cases)
 ## Specs
 
 - simple non-concurrent crawler
-- should only parse a single domain, ie. ignore outgoing links.
+- should only parse a single domain, ie. ignore outgoing links
 - for each page display which static assets each page depends on: images, css, js, video, etc.
 - prevent infinite loops, make sure you don't crawl pages you already crawled
 
@@ -31,7 +32,7 @@ the most of the methods in the code base. Used `WireMock` for mocking external H
 
 4. `State of the crawler` - Currently the state of crawler is in memory so if the crawler stops in between we loose the all work done by it. To implement this in production we should store the state in some persistence memory with replication. State includes pages crawled, urls to be crawled and any other data required to restart crawler.
 
-5. `Error handling` - Errors produced by the parser are logged but muffled, ie. no bespoke action is taken.
+5. `Error handling` - Errors produced by the parser are logged but muffled, ie. no bespoke action is taken. There is 10secs timeout configured to get the page via http call. Have catched exception at proper places to let crawler work.
 In production, error aggregation and monitoring are crucial for extending the
 effictiveness of the crawler. 
 
@@ -78,16 +79,20 @@ effictiveness of the crawler.
 - SiteMapXmlParser
     - it process sitemap.xml for the given url and returns list of url available for parsing.
 - UrlCrawlRule
-    - It fetches robots.txt file for the give url and create rules for the same.
-    - Each url should satisfy all the rules inorder to be processed by the crawler.
+    - It fetches robots.txt file for the give url and create rules for the same
+    - Each url should satisfy all the rules inorder to be processed by the crawler
 - Crawler
-    - at initialization get links from SiteMapXmlParser, then push this links to queue and        create instance of UrlCrawlrule fot the give domain name.
-    - retrieve a url from the queue.
-    - checks if the url is not already processed and urlcrawlRule allowes the url.
+    - at initialization get links from SiteMapXmlParser, then push this links to queue and        create instance of UrlCrawlrule fot the give domain name
+    - retrieve a url from the queue
+    - checks if the url is not already processed and urlcrawlRule allowes the url
     - calls pageExtractor module to retrieve the page object (contains assets links and list of links)
     - add the page to the list of pages (final result)
-    - for all the links in the page,check for the rules and then push to the queue.
-    - stop when the queue is empty or the crawler is finish running for the given seconds.
+    - for all the links in the page,check for the rules and then push to the queue
+    - stop when the queue is empty or the crawler is finish running for the given seconds
+
+## Performance
+- Tested crawler on https://gocardless.com/. It crawled 275 pages in 5 minutes
+- The crawler is single threaded. The time is also spent on waiting for certain pages, timeout being 10secs.
 
 ## Data Structures
 - Page - contains info about a page
@@ -99,9 +104,8 @@ effictiveness of the crawler.
 }
 ```
 
-- PageRequestQueue - a simple queue containing un-parsed urls. It is backed by hashSet to contain unique urls only.
+- PageRequestQueue - a simple queue containing un-parsed urls. It is backed by hashSet to contain unique urls only
 ```
-[url1, url2]
+[url, url]
 ```
-
 
