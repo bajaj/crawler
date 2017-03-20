@@ -6,6 +6,7 @@ Web cralwer for GoCardless
 ## Usage
 - Language used for coding- Java 1.8
 - Build tool: Gradle
+- Dependency: Java 1.8, Gradle 2.7+
 - The output is printed to STDOUT and is also written to result.txt file.
 ```bash
 $ ./gradlew build
@@ -28,7 +29,7 @@ $ ./gradlew test (to run test cases)
 
 3. `Test suite` - test suite exists in the `src/test` folder, it covers the core functionality and
 the most of the methods in the code base. Used `WireMock` for mocking external HTTP resources. `Mockito with Junit` for interface dependency. 
-`code coverage`: 69% lines. For most part of the code code coverage is > 80% lines. 
+`code coverage`: 69% lines. For most part of the code coverage is > 80% lines. 
 
 4. `State of the crawler` - Currently the state of crawler is in memory so if the crawler stops in between we loose the all work done by it. To implement this in production we should store the state in some persistence memory with replication. State includes pages crawled, urls to be crawled and any other data required to restart crawler.
 
@@ -82,7 +83,7 @@ effictiveness of the crawler.
     - It fetches robots.txt file for the give url and create rules for the same
     - Each url should satisfy all the rules inorder to be processed by the crawler
 - Crawler
-    - at initialization get links from SiteMapXmlParser, then push this links to queue and        create instance of UrlCrawlrule fot the give domain name
+    - at initialization the crawler gets links from SiteMapXmlParser, then push this links to queue and        create instance of UrlCrawlrule for the give domain name
     - retrieve a url from the queue
     - checks if the url is not already processed and urlcrawlRule allowes the url
     - calls pageExtractor module to retrieve the page object (contains assets links and list of links)
@@ -106,6 +107,6 @@ effictiveness of the crawler.
 
 - PageRequestQueue - a simple queue containing un-parsed urls. It is backed by hashSet to contain unique urls only
 ```
-[url, url]
+[url1, url2]
 ```
 
